@@ -1,0 +1,123 @@
+﻿@model UploadViewModel;
+@{
+    ViewData["Title"] = @Model.Title;
+}
+<div class="row">
+    <div class="col-md-12" style="text-align:center;">
+        <h1>@Model.Label</h1>
+    </div>
+</div>
+
+<div class="row" style="margin-top:20px;">
+    <div class="col-md-1"></div>
+
+    <div class="col-md-9">
+        @Model.explanation
+    </div>
+
+</div>
+
+<div class="row" style="margin-top:10px;" id="divInput">
+    <div class="col-md-2"></div>
+
+    <div class="col-md-4">
+        <input type="file" id="fuPhoto" onchange="enableUpload();" name="postedFile1"></input>
+    </div>
+
+    <div class="col-md-3">
+        <button class="btn btn-info" id="btnUpload" onclick="uploadFile();" disabled>Upload</button>
+    </div>
+</div>
+
+<div class="row" style="margin-top:10px;display:none;" id="divRedo" >
+    <div class="col-md-2"></div>
+
+    @if (Model.screen == ScreenType.Goals)
+    {
+        <div class="col-md-4">
+            <a asp-area="" asp-controller="Home" asp-action="Goals">Redo</a>
+        </div>
+    }
+    else {
+        <div class="col-md-4">
+            <a asp-area="" asp-controller="Home" asp-action="Temperature">Redo</a>
+        </div>
+    }
+
+</div>
+
+<div class="row" style="margin-top:20px;">
+    <div class="col-md-1"></div>
+
+    <div class="col-md-9">
+        @Model.format1
+    </div>
+
+</div>
+
+<div class="row">
+    <div class="col-md-1"></div>
+
+    <div class="col-md-9" style="padding-left:50px;">
+        @Model.format2
+    </div>
+
+</div>
+
+<div class="row">
+    <div class="col-md-1"></div>
+
+    <div class="col-md-9">
+        @Model.format3
+    </div>
+
+</div>
+
+<div class="row" style="margin-top:30px;">
+    <div class="col-md-1"></div>
+
+    <div class="col-md-9" id="divStatus">
+    </div>
+</div>
+
+
+<script>
+    $(document).ready(function () {
+    });
+
+    function enableUpload() {
+        $("#btnUpload").prop("disabled", false);
+    }  //  enableUpload() 
+
+    function uploadFile() {
+
+        $("#divInput").hide();
+        $("#divRedo").show();
+        // Checking whether FormData is available in browser
+        if (window.FormData !== undefined) {
+            var url = "@Url.Action("Upload", "Home")";
+            url += "?screen=@Model.screen";
+
+            
+            //Add the Field values to FormData object.
+            var formData = new FormData();
+            formData.append("screen", "@Model.screen");
+            formData.append("postedFile", $("#fuPhoto")[0].files[0]);
+
+            $.ajax({
+                type: 'POST',
+                url: url,
+                data: formData,
+                processData: false,
+                contentType: false
+            }).done(function (response) {
+                $("#divStatus").html(response);
+                //if (response.Status === "success") { alert("success"); } else alert("failure");
+
+
+            });
+        } else {
+            alert("FormData is not supported.");
+        }
+    }  //  uploadFile()
+</script>
